@@ -22,10 +22,10 @@
   --error: #EF4444;
   --orange: #F59E0B;
   --blue: #3B82F6;
-  --minh-color: #3B82F6;
-  --linh-color: #C6007E;
-  --duc-color: #10B981;
-  --huong-color: #F59E0B;
+  --lam-color: #3B82F6;
+  --hoa-color: #C6007E;
+  --tuan-color: #10B981;
+  --hanh-color: #F59E0B;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--light); color: var(--dark); min-height: 100vh; }
@@ -280,25 +280,25 @@ textarea.answer-input:focus { border-color: var(--teal); outline: none; }
   </div>
   <div class="char-select-title">CHỌN NHÂN VẬT CỦA BẠN</div>
   <div class="char-grid" id="charGrid">
-    <div class="char-card" data-char="minh" onclick="selectChar('minh')">
+    <div class="char-card" data-char="lam" onclick="selectChar('lam')">
       <div class="char-avatar">🕵️</div>
       <div class="char-name">Lâm</div>
       <div class="char-alias">Người Hỏi</div>
       <div class="char-bonus">+20% Phase 1</div>
     </div>
-    <div class="char-card" data-char="linh" onclick="selectChar('linh')">
+    <div class="char-card" data-char="hoa" onclick="selectChar('hoa')">
       <div class="char-avatar">🎨</div>
       <div class="char-name">Hòa</div>
       <div class="char-alias">Kiến Trúc Sư Đồ Họa</div>
       <div class="char-bonus">+20% Phase 2</div>
     </div>
-    <div class="char-card" data-char="duc" onclick="selectChar('duc')">
+    <div class="char-card" data-char="tuan" onclick="selectChar('tuan')">
       <div class="char-avatar">🔍</div>
       <div class="char-name">Tuấn</div>
       <div class="char-alias">Thám Tử Sai Lầm</div>
       <div class="char-bonus">+20% Phase 3</div>
     </div>
-    <div class="char-card" data-char="huong" onclick="selectChar('huong')">
+    <div class="char-card" data-char="hanh" onclick="selectChar('hanh')">
       <div class="char-avatar">📖</div>
       <div class="char-name">Hạnh</div>
       <div class="char-alias">Người Kể Chuyện</div>
@@ -358,7 +358,7 @@ try {
 // CHARACTER DATA
 // ═══════════════════════════════════════════════
 const CHARACTERS = {
-  minh: { name: 'Lâm', alias: 'Người Hỏi', avatar: '🕵️', bonusPhase: 0, color: '#3B82F6',
+  lam: { name: 'Lâm', alias: 'Người Hỏi', avatar: '🕵️', bonusPhase: 0, color: '#3B82F6',
     quotes: {
       phase1: '"Một câu hỏi đúng giá trị hơn ngàn câu trả lời sai!" — Lâm nhắc bạn.',
       phase2: '"Grammar of Graphics giống như ngữ pháp tiếng Việt — hiểu cấu trúc, bạn viết được bất kỳ câu nào!" — Lâm giải thích.',
@@ -366,7 +366,7 @@ const CHARACTERS = {
       phase4: '"Hãy viết báo cáo như kể một câu chuyện — có mở, thân, kết!" — Lâm gợi ý.'
     }
   },
-  linh: { name: 'Hòa', alias: 'Kiến Trúc Sư Đồ Họa', avatar: '🎨', bonusPhase: 1, color: '#C6007E',
+  hoa: { name: 'Hòa', alias: 'Kiến Trúc Sư Đồ Họa', avatar: '🎨', bonusPhase: 1, color: '#C6007E',
     quotes: {
       phase1: '"ASSERT giống như bản thiết kế kiến trúc — không có nó, bạn xây nhà không có móng!" — Hòa dằn mặt.',
       phase2: '"Mỗi lớp Grammar of Graphics là một tầng — xếp đúng thứ tự, biểu đồ sẽ hoàn hảo!" — Hòa nhắc.',
@@ -374,7 +374,7 @@ const CHARACTERS = {
       phase4: '"Thiết kế tốt = truyền đạt insight nhanh nhất!" — Hòa nhắc.'
     }
   },
-  duc: { name: 'Tuấn', alias: 'Thám Tử Sai Lầm', avatar: '🔍', bonusPhase: 2, color: '#10B981',
+  tuan: { name: 'Tuấn', alias: 'Thám Tử Sai Lầm', avatar: '🔍', bonusPhase: 2, color: '#10B981',
     quotes: {
       phase1: '"Logic là nền tảng — đặt câu hỏi có hệ thống, bạn sẽ tìm ra chân tướng!" — Tuấn khuyên bạn ok?.',
       phase2: '"Mỗi biểu đồ là một chương trình — phân tích từng module, bạn sẽ hiểu cả hệ thống!" — Tuấn ôm đầu.',
@@ -382,7 +382,7 @@ const CHARACTERS = {
       phase4: '"Debug xong, viết tài liệu — đó là phong cách chuyên nghiệp!" — Tuấn tổng kết.'
     }
   },
-  huong: { name: 'Hạnh', alias: 'Người Kể Chuyện', avatar: '📖', bonusPhase: 3, color: '#F59E0B',
+  hanh: { name: 'Hạnh', alias: 'Người Kể Chuyện', avatar: '📖', bonusPhase: 3, color: '#F59E0B',
     quotes: {
       phase1: '"Mỗi bộ dữ liệu chứa một câu chuyện — ASK giúp bạn tìm đúng chương cần đọc!" — Hạnh giảng giải.',
       phase2: '"Grammar of Graphics giống như ngữ pháp kể chuyện — chủ ngữ, vị ngữ, bổ ngữ cho biểu đồ!" — Hạnh dằn mặt.',
@@ -470,7 +470,7 @@ const DATA_TYPE_CLASSIFY = [
   { variable: 'Monthly Income (VNĐ)', correct: 'ratio', hint: '20 triệu = 2× 10 triệu' },
   { variable: 'Gender (giới tính)', correct: 'nominal', hint: 'Chỉ phân loại' },
   { variable: 'Years at Company', correct: 'ratio', hint: 'Có điểm 0, có tỉ lệ' },
-  { variable: 'Education Level', correct: 'ordinal', hint: 'Có thứ tự tự nhiên' },
+  { variable: 'Etuanation Level', correct: 'ordinal', hint: 'Có thứ tự tự nhiên' },
   { variable: 'Distance from Home (km)', correct: 'ratio', hint: 'Khoảng cách có điểm 0' }
 ];
 
@@ -1278,11 +1278,11 @@ async function renderLeaderboard() {
   if (lb.length === 0) {
     lb.push({ name: STATE.playerName, mssv: STATE.playerMSSV, char: STATE.character, score: STATE.score, avatar: CHARACTERS[STATE.character].avatar });
     const bots = [
-      { name:'Nguyễn Văn An', mssv:'2021001', char:'minh', score:Math.floor(Math.random()*200+300), avatar:'🕵️' },
-      { name:'Trần Thị Bình', mssv:'2021002', char:'linh', score:Math.floor(Math.random()*200+250), avatar:'🎨' },
-      { name:'Lê Đức Cường', mssv:'2021003', char:'duc', score:Math.floor(Math.random()*150+200), avatar:'🔍' },
-      { name:'Phạm Hương Giang', mssv:'2021004', char:'huong', score:Math.floor(Math.random()*250+350), avatar:'📖' },
-      { name:'Võ Minh Đạt', mssv:'2021005', char:'minh', score:Math.floor(Math.random()*200+150), avatar:'🕵️' },
+      { name:'Nguyễn Văn An', mssv:'2021001', char:'lam', score:Math.floor(Math.random()*200+300), avatar:'🕵️' },
+      { name:'Trần Thị Bình', mssv:'2021002', char:'hoa', score:Math.floor(Math.random()*200+250), avatar:'🎨' },
+      { name:'Lê Đức Cường', mssv:'2021003', char:'tuan', score:Math.floor(Math.random()*150+200), avatar:'🔍' },
+      { name:'Phạm Hương Giang', mssv:'2021004', char:'hanh', score:Math.floor(Math.random()*250+350), avatar:'📖' },
+      { name:'Võ lam Đạt', mssv:'2021005', char:'lam', score:Math.floor(Math.random()*200+150), avatar:'🕵️' },
     ];
     lb = [...lb, ...bots];
   }
