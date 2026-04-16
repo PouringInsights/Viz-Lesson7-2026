@@ -282,25 +282,25 @@ textarea.answer-input:focus { border-color: var(--teal); outline: none; }
   <div class="char-grid" id="charGrid">
     <div class="char-card" data-char="minh" onclick="selectChar('minh')">
       <div class="char-avatar">🕵️</div>
-      <div class="char-name">Minh</div>
+      <div class="char-name">Lâm</div>
       <div class="char-alias">Người Hỏi</div>
       <div class="char-bonus">+20% Phase 1</div>
     </div>
     <div class="char-card" data-char="linh" onclick="selectChar('linh')">
       <div class="char-avatar">🎨</div>
-      <div class="char-name">Linh</div>
+      <div class="char-name">Hòa</div>
       <div class="char-alias">Kiến Trúc Sư Đồ Họa</div>
       <div class="char-bonus">+20% Phase 2</div>
     </div>
     <div class="char-card" data-char="duc" onclick="selectChar('duc')">
       <div class="char-avatar">🔍</div>
-      <div class="char-name">Đức</div>
+      <div class="char-name">Tuấn</div>
       <div class="char-alias">Thám Tử Sai Lầm</div>
       <div class="char-bonus">+20% Phase 3</div>
     </div>
     <div class="char-card" data-char="huong" onclick="selectChar('huong')">
       <div class="char-avatar">📖</div>
-      <div class="char-name">Hương</div>
+      <div class="char-name">Hạnh</div>
       <div class="char-alias">Người Kể Chuyện</div>
       <div class="char-bonus">+20% Phase 4</div>
     </div>
@@ -358,36 +358,36 @@ try {
 // CHARACTER DATA
 // ═══════════════════════════════════════════════
 const CHARACTERS = {
-  minh: { name: 'Minh', alias: 'Người Hỏi', avatar: '🕵️', bonusPhase: 0, color: '#3B82F6',
+  minh: { name: 'Lâm', alias: 'Người Hỏi', avatar: '🕵️', bonusPhase: 0, color: '#3B82F6',
     quotes: {
-      phase1: '"Một câu hỏi đúng giá trị hơn ngàn câu trả lời sai!" — Minh nhắc bạn.',
-      phase2: '"Grammar of Graphics giống như ngữ pháp tiếng Việt — hiểu cấu trúc, bạn viết được bất kỳ câu nào!" — Minh suy ngẫm.',
-      phase3: '"Thám tử giỏi không chỉ tìm manh mối, mà còn biết KẾT NỐI chúng!" — Minh phân tích.',
-      phase4: '"Hãy viết báo cáo như kể một câu chuyện — có mở, thân, kết!" — Minh gợi ý.'
+      phase1: '"Một câu hỏi đúng giá trị hơn ngàn câu trả lời sai!" — Lâm nhắc bạn.',
+      phase2: '"Grammar of Graphics giống như ngữ pháp tiếng Việt — hiểu cấu trúc, bạn viết được bất kỳ câu nào!" — Lâm giải thích.',
+      phase3: '"Thám tử giỏi không chỉ tìm manh mối, mà còn biết KẾT NỐI chúng!" — Lâm dằn mặt.',
+      phase4: '"Hãy viết báo cáo như kể một câu chuyện — có mở, thân, kết!" — Lâm gợi ý.'
     }
   },
-  linh: { name: 'Linh', alias: 'Kiến Trúc Sư Đồ Họa', avatar: '🎨', bonusPhase: 1, color: '#C6007E',
+  linh: { name: 'Hòa', alias: 'Kiến Trúc Sư Đồ Họa', avatar: '🎨', bonusPhase: 1, color: '#C6007E',
     quotes: {
-      phase1: '"ASSERT giống như bản thiết kế kiến trúc — không có nó, bạn xây nhà không có móng!" — Linh ví von.',
-      phase2: '"Mỗi lớp Grammar of Graphics là một tầng — xếp đúng thứ tự, biểu đồ sẽ hoàn hảo!" — Linh hào hứng.',
-      phase3: '"Mắt thẩm mỹ sẽ giúp bạn phát hiện biểu đồ gian lận ngay lập tức!" — Linh tự tin.',
-      phase4: '"Thiết kế tốt = truyền đạt insight nhanh nhất!" — Linh nhắc nhở.'
+      phase1: '"ASSERT giống như bản thiết kế kiến trúc — không có nó, bạn xây nhà không có móng!" — Hòa dằn mặt.',
+      phase2: '"Mỗi lớp Grammar of Graphics là một tầng — xếp đúng thứ tự, biểu đồ sẽ hoàn hảo!" — Hòa nhắc.',
+      phase3: '"Mắt thẩm mỹ sẽ giúp bạn phát hiện biểu đồ gian lận ngay lập tức!" — Hòa giảng giải.',
+      phase4: '"Thiết kế tốt = truyền đạt insight nhanh nhất!" — Hòa nhắc.'
     }
   },
-  duc: { name: 'Đức', alias: 'Thám Tử Sai Lầm', avatar: '🔍', bonusPhase: 2, color: '#10B981',
+  duc: { name: 'Tuấn', alias: 'Thám Tử Sai Lầm', avatar: '🔍', bonusPhase: 2, color: '#10B981',
     quotes: {
-      phase1: '"Logic là nền tảng — đặt câu hỏi có hệ thống, bạn sẽ tìm ra chân tướng!" — Đức khuyên.',
-      phase2: '"Mỗi biểu đồ là một chương trình — phân tích từng module, bạn sẽ hiểu cả hệ thống!" — Đức giải thích.',
-      phase3: '"Bug trong code khó tìm, nhưng bug trong biểu đồ thì tôi không bao giờ bỏ sót!" — Đức vỗ ngực.',
-      phase4: '"Debug xong, viết tài liệu — đó là phong cách chuyên nghiệp!" — Đức tổng kết.'
+      phase1: '"Logic là nền tảng — đặt câu hỏi có hệ thống, bạn sẽ tìm ra chân tướng!" — Tuấn khuyên bạn ok?.',
+      phase2: '"Mỗi biểu đồ là một chương trình — phân tích từng module, bạn sẽ hiểu cả hệ thống!" — Tuấn ôm đầu.',
+      phase3: '"Bug trong code khó tìm, nhưng bug trong biểu đồ thì tôi không bao giờ bỏ sót!" — Tuấn flex.',
+      phase4: '"Debug xong, viết tài liệu — đó là phong cách chuyên nghiệp!" — Tuấn tổng kết.'
     }
   },
-  huong: { name: 'Hương', alias: 'Người Kể Chuyện', avatar: '📖', bonusPhase: 3, color: '#F59E0B',
+  huong: { name: 'Hạnh', alias: 'Người Kể Chuyện', avatar: '📖', bonusPhase: 3, color: '#F59E0B',
     quotes: {
-      phase1: '"Mỗi bộ dữ liệu chứa một câu chuyện — ASK giúp bạn tìm đúng chương cần đọc!" — Hương mơ mộng.',
-      phase2: '"Grammar of Graphics giống như ngữ pháp kể chuyện — chủ ngữ, vị ngữ, bổ ngữ cho biểu đồ!" — Hương liên tưởng.',
-      phase3: '"Biểu đồ sai = câu chuyện sai lệch — nguy hiểm hơn cả fake news!" — Hương cảnh báo.',
-      phase4: '"Đây là lúc bạn viết câu chuyện của riêng mình từ dữ liệu!" — Hương phấn khích.'
+      phase1: '"Mỗi bộ dữ liệu chứa một câu chuyện — ASK giúp bạn tìm đúng chương cần đọc!" — Hạnh giảng giải.',
+      phase2: '"Grammar of Graphics giống như ngữ pháp kể chuyện — chủ ngữ, vị ngữ, bổ ngữ cho biểu đồ!" — Hạnh dằn mặt.',
+      phase3: '"Biểu đồ sai = câu chuyện sai lệch — nguy hiểm hơn cả fake news!" — Hạnh cảnh báo.',
+      phase4: '"Đây là lúc bạn viết câu chuyện của riêng mình từ dữ liệu!" — Hạnh chốt lại.'
     }
   }
 };
