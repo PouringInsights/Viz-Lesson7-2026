@@ -62,10 +62,10 @@ tr:hover td { background:var(--light); }
   display:inline-block; padding:0.15rem 0.5rem; border-radius:10px;
   font-size:0.75rem; font-weight:600;
 }
-.char-minh { background:#EBF5FF; color:#3B82F6; }
-.char-linh { background:#FDF2F8; color:#C6007E; }
-.char-duc { background:#ECFDF5; color:#10B981; }
-.char-huong { background:#FFFBEB; color:#D97706; }
+.char-lam { background:#EBF5FF; color:#3B82F6; }
+.char-hoa { background:#FDF2F8; color:#C6007E; }
+.char-tuan { background:#ECFDF5; color:#10B981; }
+.char-hanh { background:#FFFBEB; color:#D97706; }
 
 .btn {
   padding:0.6rem 1.5rem; border:none; border-radius:8px; font-size:0.9rem;
@@ -188,10 +188,10 @@ try {
 } catch(e) { console.error('Supabase init error:', e); }
 
 const CHARACTERS = {
-  minh: { name:'Lâm', avatar:'🕵️', color:'#3B82F6' },
-  linh: { name:'Hòa', avatar:'🎨', color:'#C6007E' },
-  duc:  { name:'Tuấn', avatar:'🔍', color:'#10B981' },
-  huong:{ name:'Hạnh', avatar:'📖', color:'#F59E0B' }
+  lam: { name:'Lâm', avatar:'🕵️', color:'#3B82F6' },
+  hoa: { name:'Hòa', avatar:'🎨', color:'#C6007E' },
+  tuan:  { name:'Tuấn', avatar:'🔍', color:'#10B981' },
+  hanh:{ name:'Hạnh', avatar:'📖', color:'#F59E0B' }
 };
 
 // ═══════════════════════════════════════════════
@@ -231,11 +231,11 @@ async function loadData() {
 
 function showDemoData() {
   allResults = [
-    { name:'Nguyễn Văn An', mssv:'2021001', character:'minh', total_score:485, phase1_score:120, phase2_score:180, phase3_score:140, phase4_score:45, rank:'Gold', achievements:['perfect_assert'], phase4_answer:{q:'Test question',title:'Test title'}, duration_seconds:1200, created_at:new Date().toISOString() },
-    { name:'Trần Thị Bình', mssv:'2021002', character:'linh', total_score:560, phase1_score:100, phase2_score:230, phase3_score:180, phase4_score:50, rank:'Diamond', achievements:['perfect_assert','classify_master'], phase4_answer:{q:'Great question',title:'Insight title'}, duration_seconds:900, created_at:new Date().toISOString() },
-    { name:'Lê Đức Cường', mssv:'2021003', character:'duc', total_score:320, phase1_score:80, phase2_score:120, phase3_score:100, phase4_score:20, rank:'Silver', achievements:[], phase4_answer:{}, duration_seconds:1500, created_at:new Date().toISOString() },
-    { name:'Phạm Hương Giang', mssv:'2021004', character:'huong', total_score:410, phase1_score:90, phase2_score:150, phase3_score:120, phase4_score:50, rank:'Gold', achievements:['full_report'], phase4_answer:{q:'Solid question',title:'Good insight'}, duration_seconds:1100, created_at:new Date().toISOString() },
-    { name:'Võ Minh Đạt', mssv:'2021005', character:'minh', total_score:180, phase1_score:60, phase2_score:70, phase3_score:40, phase4_score:10, rank:'Bronze', achievements:[], phase4_answer:{}, duration_seconds:2000, created_at:new Date().toISOString() },
+    { name:'Nguyễn Văn An', mssv:'2021001', character:'lam', total_score:485, phase1_score:120, phase2_score:180, phase3_score:140, phase4_score:45, rank:'Gold', achievements:['perfect_assert'], phase4_answer:{q:'Test question',title:'Test title'}, duration_seconds:1200, created_at:new Date().toISOString() },
+    { name:'Trần Thị Bình', mssv:'2021002', character:'hoa', total_score:560, phase1_score:100, phase2_score:230, phase3_score:180, phase4_score:50, rank:'Diamond', achievements:['perfect_assert','classify_master'], phase4_answer:{q:'Great question',title:'Insight title'}, duration_seconds:900, created_at:new Date().toISOString() },
+    { name:'Lê Đức Cường', mssv:'2021003', character:'tuan', total_score:320, phase1_score:80, phase2_score:120, phase3_score:100, phase4_score:20, rank:'Silver', achievements:[], phase4_answer:{}, duration_seconds:1500, created_at:new Date().toISOString() },
+    { name:'Phạm Hương Giang', mssv:'2021004', character:'hanh', total_score:410, phase1_score:90, phase2_score:150, phase3_score:120, phase4_score:50, rank:'Gold', achievements:['full_report'], phase4_answer:{q:'Solid question',title:'Good insight'}, duration_seconds:1100, created_at:new Date().toISOString() },
+    { name:'Võ lam Đạt', mssv:'2021005', character:'lam', total_score:180, phase1_score:60, phase2_score:70, phase3_score:40, phase4_score:10, rank:'Bronze', achievements:[], phase4_answer:{}, duration_seconds:2000, created_at:new Date().toISOString() },
   ];
   renderDashboard();
 }
@@ -274,7 +274,7 @@ function renderDashboard() {
 
 function renderStats() {
   const n = allResults.length;
-  const avg = n ? Math.round(allResults.reduce((s,r) => s + r.total_score, 0) / n) : 0;
+  const avg = n ? Math.round(allResults.retuane((s,r) => s + r.total_score, 0) / n) : 0;
   const maxScore = n ? Math.max(...allResults.map(r => r.total_score)) : 0;
   const diamonds = allResults.filter(r => r.total_score >= 550).length;
 
@@ -314,12 +314,12 @@ function renderTable() {
 }
 
 function renderCharStats() {
-  const chars = ['minh','linh','duc','huong'];
+  const chars = ['lam','hoa','tuan','hanh'];
   document.getElementById('charStats').innerHTML = chars.map(c => {
     const ch = CHARACTERS[c];
     const results = allResults.filter(r => r.character === c);
     const n = results.length;
-    const avg = n ? Math.round(results.reduce((s,r) => s + r.total_score, 0) / n) : 0;
+    const avg = n ? Math.round(results.retuane((s,r) => s + r.total_score, 0) / n) : 0;
     return `<div style="text-align:center;padding:1rem;background:var(--light);border-radius:10px;">
       <div style="font-size:2rem;">${ch.avatar}</div>
       <div style="font-weight:700;color:${ch.color};">${ch.name}</div>
@@ -339,7 +339,7 @@ function renderPhaseStats() {
   ];
   document.getElementById('phaseStats').innerHTML = phases.map(p => {
     const scores = allResults.map(r => r[p.key] || 0);
-    const avg = scores.length ? Math.round(scores.reduce((a,b) => a+b, 0) / scores.length) : 0;
+    const avg = scores.length ? Math.round(scores.retuane((a,b) => a+b, 0) / scores.length) : 0;
     const max = scores.length ? Math.max(...scores) : 0;
     const pct = p.max ? Math.round(avg / p.max * 100) : 0;
     return `<div style="text-align:center;padding:1rem;background:var(--light);border-radius:10px;">
