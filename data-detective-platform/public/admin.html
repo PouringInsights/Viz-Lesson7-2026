@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Detective — Admin Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --purple-dark: #4A1771; --purple: #5C2D91; --teal: #00B2A9;
+  --magenta: #C6007E; --white: #FFFFFF; --light: #F5F5F5;
+  --dark: #2D2D2D; --gray: #666; --success: #10B981; --error: #EF4444;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--light); color:var(--dark); }
+
+.header {
+  background:var(--purple-dark); color:var(--white); padding:1rem 2rem;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.header h1 { font-size:1.3rem; letter-spacing:2px; }
+.header .subtitle { color:var(--teal); font-size:0.85rem; }
+
+.login-screen {
+  max-width:400px; margin:3rem auto; background:var(--white);
+  border-radius:12px; padding:2rem; box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  text-align:center;
+}
+.login-screen h2 { color:var(--purple-dark); margin-bottom:1rem; }
+.login-screen input {
+  width:100%; padding:0.8rem; border:2px solid #e0e0e0; border-radius:8px;
+  font-size:1rem; margin-bottom:0.8rem; outline:none;
+}
+.login-screen input:focus { border-color:var(--teal); }
+
+.container { max-width:1100px; margin:0 auto; padding:1.5rem; }
+
+.stats-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1rem; margin-bottom:2rem;
+}
+.stat-card {
+  background:var(--white); border-radius:12px; padding:1.5rem;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06); text-align:center;
+}
+.stat-card .stat-num { font-size:2.5rem; font-weight:800; margin-bottom:0.3rem; }
+.stat-card .stat-label { font-size:0.85rem; color:var(--gray); }
+
+.section { background:var(--white); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.section h3 { color:var(--purple-dark); margin-bottom:1rem; font-size:1.2rem; }
+
+table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+th { background:var(--purple-dark); color:var(--white); padding:0.6rem 0.5rem; text-align:left; font-weight:600; position:sticky; top:0; }
+td { padding:0.5rem; border-bottom:1px solid #eee; }
+tr:hover td { background:var(--light); }
+.rank-diamond { color:#00B2A9; font-weight:700; }
+.rank-gold { color:#D4A500; font-weight:700; }
+.rank-silver { color:#888; font-weight:700; }
+.rank-bronze { color:#CD7F32; font-weight:700; }
+
+.char-badge {
+  display:inline-block; padding:0.15rem 0.5rem; border-radius:10px;
+  font-size:0.75rem; font-weight:600;
+}
+.char-minh { background:#EBF5FF; color:#3B82F6; }
+.char-linh { background:#FDF2F8; color:#C6007E; }
+.char-duc { background:#ECFDF5; color:#10B981; }
+.char-huong { background:#FFFBEB; color:#D97706; }
+
+.btn {
+  padding:0.6rem 1.5rem; border:none; border-radius:8px; font-size:0.9rem;
+  font-weight:600; cursor:pointer; transition:all 0.2s;
+}
+.btn-teal { background:var(--teal); color:var(--white); }
+.btn-teal:hover { background:#009990; }
+.btn-magenta { background:var(--magenta); color:var(--white); }
+.btn-magenta:hover { background:#a50066; }
+.btn-outline { background:transparent; border:2px solid var(--teal); color:var(--teal); }
+.btn-outline:hover { background:var(--teal); color:var(--white); }
+
+.toolbar { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+.toolbar input[type="text"] {
+  padding:0.5rem 1rem; border:2px solid #e0e0e0; border-radius:8px;
+  font-size:0.85rem; outline:none; flex:1; min-width:200px;
+}
+.toolbar input:focus { border-color:var(--teal); }
+
+.phase4-answer { max-width:300px; font-size:0.8rem; color:var(--gray); cursor:pointer; }
+.phase4-answer:hover { color:var(--purple); }
+
+.modal-overlay {
+  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background:var(--white); border-radius:12px; padding:2rem; max-width:600px;
+  width:90%; max-height:80vh; overflow-y:auto;
+}
+.modal h3 { color:var(--purple-dark); margin-bottom:1rem; }
+.modal pre { background:var(--light); padding:1rem; border-radius:8px; font-size:0.8rem; overflow-x:auto; white-space:pre-wrap; }
+.modal .close-btn { float:right; cursor:pointer; font-size:1.2rem; color:var(--gray); }
+
+.hidden { display:none !important; }
+.live-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--success); margin-right:0.4rem; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>DATA DETECTIVE — ADMIN</h1>
+    <div class="subtitle">Bảng điều khiển Giảng viên</div>
+  </div>
+  <div id="headerRight"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login-screen">
+  <h2>Đăng nhập Admin</h2>
+  <p style="color:var(--gray);margin-bottom:1.5rem;font-size:0.9rem;">Nhập mật khẩu admin (đặt trong Supabase)</p>
+  <input type="password" id="adminPass" placeholder="Mật khẩu admin..." onkeydown="if(event.key==='Enter')doLogin()">
+  <br>
+  <button class="btn btn-teal" onclick="doLogin()" style="width:100%;">Đăng nhập</button>
+  <div id="loginError" style="color:var(--error);margin-top:0.5rem;font-size:0.85rem;"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="container hidden">
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="section">
+    <h3><span class="live-dot"></span>Bảng xếp hạng lớp (Real-time)</h3>
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Tìm theo tên hoặc MSSV..." oninput="filterTable()">
+      <button class="btn btn-teal" onclick="refreshData()">Làm mới</button>
+      <button class="btn btn-outline" onclick="exportCSV()">Xuất CSV</button>
+      <button class="btn btn-outline" onclick="exportExcel()">Xuất Excel</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>#</th><th>Họ tên</th><th>MSSV</th><th>Nhân vật</th>
+            <th>Tổng điểm</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th>
+            <th>Hạng</th><th>Thời gian</th><th>Bài P4</th><th>Ngày</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Thống kê theo nhân vật</h3>
+    <div id="charStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;"></div>
+  </div>
+
+  <div class="section">
+    <h3>Phân bố điểm theo Phase</h3>
+    <div id="phaseStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;"></div>
+  </div>
+</div>
+
+<!-- MODAL for Phase 4 answers -->
+<div id="p4Modal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <span class="close-btn" onclick="closeModal()">✕</span>
+    <h3 id="modalTitle">Bài Phase 4</h3>
+    <pre id="modalContent"></pre>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — THAY ĐỔI GIỐNG FILE GAME
+// ═══════════════════════════════════════════════
+const SUPABASE_URL = 'https://ochvdbhrhbcyldznpxnn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jaHZkYmhyaGJjeWxkem5weG5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDYzNTAsImV4cCI6MjA5MTkyMjM1MH0.2ATMuGTWZs9R8T-Mr6K8TrKezoGHqzXa94XeqiE4hss';
+const ADMIN_PASSWORD = 'datavizk18'; // Đổi mật khẩu tại đây
+
+let supabase = null;
+let allResults = [];
+
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) { console.error('Supabase init error:', e); }
+
+const CHARACTERS = {
+  minh: { name:'Minh', avatar:'🕵️', color:'#3B82F6' },
+  linh: { name:'Linh', avatar:'🎨', color:'#C6007E' },
+  duc:  { name:'Đức', avatar:'🔍', color:'#10B981' },
+  huong:{ name:'Hương', avatar:'📖', color:'#F59E0B' }
+};
+
+// ═══════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════
+function doLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('headerRight').innerHTML = '<span style="font-size:0.85rem;">Giảng viên: Th.S Trương Hoàng Giang</span>';
+    loadData();
+    setupRealtime();
+  } else {
+    document.getElementById('loginError').textContent = 'Sai mật khẩu!';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════
+async function loadData() {
+  if (!supabase) { showDemoData(); return; }
+  try {
+    const { data, error } = await supabase
+      .from('game_results')
+      .select('*')
+      .order('total_score', { ascending: false });
+    if (error) throw error;
+    allResults = data || [];
+    renderDashboard();
+  } catch(e) {
+    console.error('Load error:', e);
+    showDemoData();
+  }
+}
+
+function showDemoData() {
+  allResults = [
+    { name:'Nguyễn Văn An', mssv:'2021001', character:'minh', total_score:485, phase1_score:120, phase2_score:180, phase3_score:140, phase4_score:45, rank:'Gold', achievements:['perfect_assert'], phase4_answer:{q:'Test question',title:'Test title'}, duration_seconds:1200, created_at:new Date().toISOString() },
+    { name:'Trần Thị Bình', mssv:'2021002', character:'linh', total_score:560, phase1_score:100, phase2_score:230, phase3_score:180, phase4_score:50, rank:'Diamond', achievements:['perfect_assert','classify_master'], phase4_answer:{q:'Great question',title:'Insight title'}, duration_seconds:900, created_at:new Date().toISOString() },
+    { name:'Lê Đức Cường', mssv:'2021003', character:'duc', total_score:320, phase1_score:80, phase2_score:120, phase3_score:100, phase4_score:20, rank:'Silver', achievements:[], phase4_answer:{}, duration_seconds:1500, created_at:new Date().toISOString() },
+    { name:'Phạm Hương Giang', mssv:'2021004', character:'huong', total_score:410, phase1_score:90, phase2_score:150, phase3_score:120, phase4_score:50, rank:'Gold', achievements:['full_report'], phase4_answer:{q:'Solid question',title:'Good insight'}, duration_seconds:1100, created_at:new Date().toISOString() },
+    { name:'Võ Minh Đạt', mssv:'2021005', character:'minh', total_score:180, phase1_score:60, phase2_score:70, phase3_score:40, phase4_score:10, rank:'Bronze', achievements:[], phase4_answer:{}, duration_seconds:2000, created_at:new Date().toISOString() },
+  ];
+  renderDashboard();
+}
+
+function refreshData() { loadData(); }
+
+function setupRealtime() {
+  if (!supabase) return;
+  supabase.channel('admin_realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'game_results' }, payload => {
+      allResults.unshift(payload.new);
+      allResults.sort((a,b) => b.total_score - a.total_score);
+      renderDashboard();
+      showNotification(payload.new.name + ' vừa hoàn thành! (' + payload.new.total_score + 'đ)');
+    })
+    .subscribe();
+}
+
+function showNotification(msg) {
+  const el = document.createElement('div');
+  el.textContent = '🔔 ' + msg;
+  el.style.cssText = 'position:fixed;top:60px;right:20px;background:#5C2D91;color:#fff;padding:0.6rem 1.2rem;border-radius:10px;font-size:0.85rem;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ═══════════════════════════════════════════════
+// RENDER DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDashboard() {
+  renderStats();
+  renderTable();
+  renderCharStats();
+  renderPhaseStats();
+}
+
+function renderStats() {
+  const n = allResults.length;
+  const avg = n ? Math.round(allResults.reduce((s,r) => s + r.total_score, 0) / n) : 0;
+  const maxScore = n ? Math.max(...allResults.map(r => r.total_score)) : 0;
+  const diamonds = allResults.filter(r => r.total_score >= 550).length;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-num" style="color:var(--purple);">${n}</div><div class="stat-label">Sinh viên đã chơi</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--teal);">${avg}</div><div class="stat-label">Điểm trung bình</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--magenta);">${maxScore}</div><div class="stat-label">Điểm cao nhất</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#00B2A9;">💎 ${diamonds}</div><div class="stat-label">Diamond rank</div></div>
+  `;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = allResults.map((r, i) => {
+    const ch = CHARACTERS[r.character] || {};
+    const rankClass = 'rank-' + (r.rank || 'bronze').toLowerCase();
+    const dur = r.duration_seconds ? Math.round(r.duration_seconds / 60) + ' phút' : '—';
+    const date = r.created_at ? new Date(r.created_at).toLocaleDateString('vi-VN') : '—';
+    const hasP4 = r.phase4_answer && Object.keys(r.phase4_answer).length > 0;
+
+    return `<tr data-search="${(r.name+' '+r.mssv).toLowerCase()}">
+      <td style="font-weight:700;color:var(--gray);">${i+1}</td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.mssv}</td>
+      <td><span class="char-badge char-${r.character}">${ch.avatar||''} ${ch.name||r.character}</span></td>
+      <td style="font-weight:800;font-size:1.1rem;color:var(--purple);">${r.total_score}</td>
+      <td>${r.phase1_score || 0}</td>
+      <td>${r.phase2_score || 0}</td>
+      <td>${r.phase3_score || 0}</td>
+      <td>${r.phase4_score || 0}</td>
+      <td class="${rankClass}">${r.rank || 'Bronze'}</td>
+      <td>${dur}</td>
+      <td>${hasP4 ? '<span class="phase4-answer" onclick="showP4('+i+')">📄 Xem bài</span>' : '—'}</td>
+      <td style="font-size:0.8rem;color:var(--gray);">${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCharStats() {
+  const chars = ['minh','linh','duc','huong'];
+  document.getElementById('charStats').innerHTML = chars.map(c => {
+    const ch = CHARACTERS[c];
+    const results = allResults.filter(r => r.character === c);
+    const n = results.length;
+    const avg = n ? Math.round(results.reduce((s,r) => s + r.total_score, 0) / n) : 0;
+    return `<div style="text-align:center;padding:1rem;background:var(--light);border-radius:10px;">
+      <div style="font-size:2rem;">${ch.avatar}</div>
+      <div style="font-weight:700;color:${ch.color};">${ch.name}</div>
+      <div style="font-size:0.85rem;color:var(--gray);">${n} người chơi</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--purple);margin-top:0.3rem;">${avg} đ</div>
+      <div style="font-size:0.75rem;color:var(--gray);">Điểm TB</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPhaseStats() {
+  const phases = [
+    { name: 'Phase 1: ASSERT', key: 'phase1_score', max: 140 },
+    { name: 'Phase 2: GoG', key: 'phase2_score', max: 240 },
+    { name: 'Phase 3: Case Study', key: 'phase3_score', max: 190 },
+    { name: 'Phase 4: Báo cáo', key: 'phase4_score', max: 50 }
+  ];
+  document.getElementById('phaseStats').innerHTML = phases.map(p => {
+    const scores = allResults.map(r => r[p.key] || 0);
+    const avg = scores.length ? Math.round(scores.reduce((a,b) => a+b, 0) / scores.length) : 0;
+    const max = scores.length ? Math.max(...scores) : 0;
+    const pct = p.max ? Math.round(avg / p.max * 100) : 0;
+    return `<div style="text-align:center;padding:1rem;background:var(--light);border-radius:10px;">
+      <div style="font-size:0.85rem;font-weight:600;color:var(--purple-dark);margin-bottom:0.5rem;">${p.name}</div>
+      <div style="font-size:1.8rem;font-weight:800;color:var(--teal);">${avg}</div>
+      <div style="font-size:0.75rem;color:var(--gray);">TB / ${p.max} max</div>
+      <div style="margin-top:0.5rem;height:6px;background:#e0e0e0;border-radius:3px;">
+        <div style="height:100%;width:${pct}%;background:var(--teal);border-radius:3px;"></div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--gray);margin-top:0.2rem;">Cao nhất: ${max}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('#resultsBody tr').forEach(tr => {
+    tr.style.display = tr.dataset.search.includes(q) ? '' : 'none';
+  });
+}
+
+function showP4(idx) {
+  const r = allResults[idx];
+  document.getElementById('modalTitle').textContent = 'Bài Phase 4 — ' + r.name + ' (' + r.mssv + ')';
+  document.getElementById('modalContent').textContent = JSON.stringify(r.phase4_answer, null, 2);
+  document.getElementById('p4Modal').classList.add('show');
+}
+function closeModal() { document.getElementById('p4Modal').classList.remove('show'); }
+
+function exportCSV() {
+  const headers = ['STT','Họ tên','MSSV','Nhân vật','Tổng điểm','P1','P2','P3','P4','Hạng','Thời gian (giây)','Ngày'];
+  const rows = allResults.map((r,i) => [
+    i+1, r.name, r.mssv, r.character, r.total_score,
+    r.phase1_score||0, r.phase2_score||0, r.phase3_score||0, r.phase4_score||0,
+    r.rank, r.duration_seconds||0,
+    r.created_at ? new Date(r.created_at).toLocaleDateString('vi-VN') : ''
+  ]);
+  const csv = '\uFEFF' + [headers, ...rows].map(r => r.map(c => '"'+c+'"').join(',')).join('\n');
+  downloadFile(csv, 'DataDetective_Results.csv', 'text/csv;charset=utf-8');
+}
+
+function exportExcel() {
+  // Simple HTML table → Excel trick
+  let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"></head><body>';
+  html += '<table border="1"><tr><th>STT</th><th>Họ tên</th><th>MSSV</th><th>Nhân vật</th><th>Tổng điểm</th><th>Phase 1</th><th>Phase 2</th><th>Phase 3</th><th>Phase 4</th><th>Hạng</th><th>Thời gian</th><th>Ngày</th></tr>';
+  allResults.forEach((r,i) => {
+    html += `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mssv}</td><td>${r.character}</td><td>${r.total_score}</td><td>${r.phase1_score||0}</td><td>${r.phase2_score||0}</td><td>${r.phase3_score||0}</td><td>${r.phase4_score||0}</td><td>${r.rank}</td><td>${r.duration_seconds?Math.round(r.duration_seconds/60)+' phút':'—'}</td><td>${r.created_at?new Date(r.created_at).toLocaleDateString('vi-VN'):''}</td></tr>`;
+  });
+  html += '</table></body></html>';
+  downloadFile(html, 'DataDetective_Results.xls', 'application/vnd.ms-excel');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
