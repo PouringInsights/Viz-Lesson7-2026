@@ -337,22 +337,24 @@ textarea.answer-input:focus { border-color: var(--teal); outline: none; }
 <div id="gameContainer" class="game-container hidden"></div>
 
 <script>
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // SUPABASE CONFIG
-// ═══════════════════════════════════════════════
-// ⚠️ THAY ĐỔI 2 GIÁ TRỊ NÀY bằng thông tin project Supabase của bạn:
+// ═══════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://ochvdbhrhbcyldznpxnn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jaHZkYmhyaGJjeWxkem5weG5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDYzNTAsImV4cCI6MjA5MTkyMjM1MH0.2ATMuGTWZs9R8T-Mr6K8TrKezoGHqzXa94XeqiE4hss';
 
 let supabase = null;
 try {
-  if (SUPABASE_URL !== 'https://ochvdbhrhbcyldznpxnn.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jaHZkYmhyaGJjeWxkem5weG5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNDYzNTAsImV4cCI6MjA5MTkyMjM1MH0.2ATMuGTWZs9R8T-Mr6K8TrKezoGHqzXa94XeqiE4hss') {
+  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log('Supabase connected!');
   } else {
-    console.warn('Supabase chưa cấu hình — chạy offline mode');
+    console.warn('Supabase chua cau hinh - chay offline mode');
   }
-} catch(e) { console.warn('Supabase init error:', e); }
+} catch (e) {
+  console.warn('Supabase init error:', e);
+}
+
 
 // ═══════════════════════════════════════════════
 // CHARACTER DATA
@@ -634,8 +636,13 @@ function setupDragDrop(sourceId) {
   document.addEventListener('touchend', e => {
     if(!draggedEl) return; draggedEl.style.opacity='1';
     const t=e.changedTouches[0], target=document.elementFromPoint(t.clientX,t.clientY);
-    const slot=target?.closest('.drop-slot');
-    if(slot){const ex=slot.querySelector('.drag-item');if(ex)src.appendChild(ex);slot.appendChild(draggedEl);}
+    const slot = target && target.closest ? target.closest('.drop-slot') : null;
+if (slot) {
+  const ex = slot.querySelector('.drag-item');
+  if (ex) src.appendChild(ex);
+  slot.appendChild(draggedEl);
+}
+
     draggedEl=null;
   });
 }
@@ -1161,7 +1168,9 @@ function submitPhase4() {
   const geo=document.getElementById('p4_geo').value;
   const stat=document.getElementById('p4_stat').value;
   const coord=document.getElementById('p4_coord').value;
-  const chrts=document.querySelector('input[name="chrts"]:checked')?.value||'';
+ const chrtsNode = document.querySelector('input[name="chrts"]:checked');
+const chrts = chrtsNode ? chrtsNode.value : '';
+
   const title=document.getElementById('p4_title').value.trim();
 
   let pts=0;
@@ -1268,7 +1277,9 @@ async function renderLeaderboard() {
       if (!error && data) {
         lb = data.map(p => ({
           name: p.name, mssv: p.mssv, char: p.character,
-          score: p.total_score, avatar: CHARACTERS[p.character]?.avatar || '🎯'
+          score: p.total_score,
+avatar: (CHARACTERS[p.character] && CHARACTERS[p.character].avatar) || '🎯'
+
         }));
       }
     } catch(e) { console.warn('Leaderboard fetch error:', e); }
